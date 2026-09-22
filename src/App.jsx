@@ -11,7 +11,9 @@ import {
   actualizarAprendiz,
   eliminarAprendiz,
 } from "./services/aprendices.service";
-
+import TablaAprendices from "./components/TablaAprendices";
+import FormularioAprendiz from "./components/FormularioAprendiz";
+import BarraAcciones from "./components/BarraAcciones";
 const theme = createTheme({
   palette: {
     primary: { main: "#39A900" },   // verde SENA
@@ -84,79 +86,17 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ mt: 4, px: { xs: 2, md: 4 } }}>
-        <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
-          <Typography variant="h5" sx={{ flex: 1, fontWeight: 700 }}>
-            Aprendices SENA
-          </Typography>
-          <Button variant="outlined" color="primary" onClick={fetchTodos} disabled={loading}>
-            {loading ? "Cargando..." : "VER TODOS"}
-          </Button>
-          <TextField
-            size="small" label="ID" value={idFiltro}
-            onChange={(e) => setIdFiltro(e.target.value)}
-            sx={{ width: 120 }}
-          />
-          <Button variant="outlined" color="secondary" onClick={fetchPorId} disabled={loading || !idFiltro}>
-            BUSCAR POR ID
-          </Button>
-          <Button variant="outlined" color="error" onClick={handleEliminar} disabled={loading || !idFiltro}>
-            ELIMINAR
-          </Button>
-          <Button variant="outlined" color="primary" onClick={handleActualizar} disabled={loading || !idFiltro}>
-            ACTUALIZAR
-          </Button>
-        </Stack>
-
-        <Paper elevation={2} sx={{ p: 2, mb: 3, maxWidth: 480, mx: "auto" }}>
-          <Typography sx={{ mb: 2, fontWeight: 600 }}>Crear aprendiz</Typography>
-          <Stack spacing={2}>
-            <TextField label="Nombre" value={form.nombre}
-              onChange={(e) => setForm({ ...form, nombre: e.target.value })} />
-            <TextField label="Apellidos" value={form.apellidos}
-              onChange={(e) => setForm({ ...form, apellidos: e.target.value })} />
-            <TextField label="Edad" type="number" value={form.edad}
-              onChange={(e) => setForm({ ...form, edad: e.target.value })} />
-            <TextField label="Género" value={form.genero}
-              onChange={(e) => setForm({ ...form, genero: e.target.value })} />
-            <TextField label="Ciudad" value={form.ciudad}
-              onChange={(e) => setForm({ ...form, ciudad: e.target.value })} />
-            <TextField label="País" value={form.pais}
-              onChange={(e) => setForm({ ...form, pais: e.target.value })} />
-            <Button variant="outlined" color="primary" onClick={handleCrear} disabled={loading}>
-              CREAR
-            </Button>
-          </Stack>
-        </Paper>
-
-        <TableContainer component={Paper} elevation={2}>
-          <Table>
-            <TableHead>
-              <TableRow sx={{ background: "#39A900" }}>
-                {["ID", "Nombre", "Apellidos", "Edad", "Género", "Ciudad", "País"].map((h) => (
-                  <TableCell key={h} sx={{ color: "#fff", fontWeight: 700 }}>{h}</TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data.map((row, i) => (
-                <TableRow key={row.id ?? i}>
-                  <TableCell>{row.id}</TableCell>
-                  <TableCell>{row.nombre}</TableCell>
-                  <TableCell>{row.apellidos}</TableCell>
-                  <TableCell>{row.edad}</TableCell>
-                  <TableCell>{row.genero}</TableCell>
-                  <TableCell>{row.ciudad}</TableCell>
-                  <TableCell>{row.pais}</TableCell>
-                </TableRow>
-              ))}
-              {data.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={7} align="center">Sin registros</TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+       <BarraAcciones
+        idFiltro={idFiltro}
+        setIdFiltro={setIdFiltro}
+        loading={loading}
+        onVerTodos={fetchTodos}
+        onBuscarPorId={fetchPorId}
+        onEliminar={handleEliminar}
+        onActualizar={handleActualizar}
+/>
+        <FormularioAprendiz form={form} setForm={setForm} onCrear={handleCrear} loading={loading} />
+        <TablaAprendices data={data} />
       </Box>
     </ThemeProvider>
   );
