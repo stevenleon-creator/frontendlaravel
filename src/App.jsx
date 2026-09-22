@@ -1,19 +1,12 @@
 import React, { useState } from "react";
-import {
-  Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  Typography, Button, TextField, Stack, CssBaseline
-} from "@mui/material";
+import { Box, CssBaseline, Tabs, Tab } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import {
-  getAprendices,
-  getAprendizPorId,
-  crearAprendiz,
-  actualizarAprendiz,
-  eliminarAprendiz,
-} from "./services/aprendices.service";
+import * as MysqlService from "./services/aprendices.service";
+import * as MongoService from "./services/aprendicesMongo.service";
 import TablaAprendices from "./components/TablaAprendices";
 import FormularioAprendiz from "./components/FormularioAprendiz";
 import BarraAcciones from "./components/BarraAcciones";
+
 const theme = createTheme({
   palette: {
     primary: { main: "#39A900" },   // verde SENA
@@ -23,6 +16,7 @@ const theme = createTheme({
 });
 
 function App() {
+  const [fuente, setFuente] = useState("mysql"); // "mysql" o "mongo"
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -30,10 +24,12 @@ function App() {
   });
   const [idFiltro, setIdFiltro] = useState("");
 
+  const service = fuente === "mysql" ? MysqlService : MongoService;
+
   const fetchTodos = async () => {
     try {
       setLoading(true);
-      const aprendices = await getAprendices();
+      const aprendices = await service.getAprendices();
       setData(aprendices);
     } catch (e) {
       console.error("Error cargando aprendices:", e);
@@ -45,7 +41,7 @@ function App() {
     if (!idFiltro) return;
     try {
       setLoading(true);
-      const aprendiz = await getAprendizPorId(idFiltro);
+      const aprendiz = await service.getAprendizPorId(idFiltro);
       setData(aprendiz ? [aprendiz] : []);
       if (aprendiz) setForm(aprendiz);
     } catch { setData([]); } finally { setLoading(false); }
@@ -54,7 +50,7 @@ function App() {
   const handleCrear = async () => {
     try {
       setLoading(true);
-      await crearAprendiz(form);
+      await service.crearAprendiz(form);
       setForm({ nombre: "", apellidos: "", edad: "", genero: "", ciudad: "", pais: "" });
       await fetchTodos();
     } catch (e) { console.error("Error creando aprendiz:", e); }
@@ -65,7 +61,7 @@ function App() {
     if (!idFiltro) return;
     try {
       setLoading(true);
-      await actualizarAprendiz(idFiltro, form);
+      await service.actualizarAprendiz(idFiltro, form);
       setForm({ nombre: "", apellidos: "", edad: "", genero: "", ciudad: "", pais: "" });
       await fetchTodos();
     } catch (e) { console.error("Error actualizando aprendiz:", e); }
@@ -76,7 +72,7 @@ function App() {
     if (!idFiltro) return;
     try {
       setLoading(true);
-      await eliminarAprendiz(idFiltro);
+      await service.eliminarAprendiz(idFiltro);
       await fetchTodos();
     } catch (e) { console.error("Error eliminando aprendiz:", e); }
     finally { setLoading(false); }
@@ -86,15 +82,24 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ mt: 4, px: { xs: 2, md: 4 } }}>
-       <BarraAcciones
-        idFiltro={idFiltro}
-        setIdFiltro={setIdFiltro}
-        loading={loading}
-        onVerTodos={fetchTodos}
-        onBuscarPorId={fetchPorId}
-        onEliminar={handleEliminar}
-        onActualizar={handleActualizar}
-/>
+        <Tabs
+          value={fuente}
+          onChange={(e, nuevo) => { setFuente(nuevo); setData([]); }}
+          sx={{ mb: 2 }}
+        >
+          <Tab label="MySQL" value="mysql" />
+          <Tab label="MongoDB" value="mongo" />
+        </Tabs>
+
+        <BarraAcciones
+          idFiltro={idFiltro}
+          setIdFiltro={setIdFiltro}
+          loading={loading}
+          onVerTodos={fetchTodos}
+          onBuscarPorId={fetchPorId}
+          onEliminar={handleEliminar}
+          onActualizar={handleActualizar}
+        />
         <FormularioAprendiz form={form} setForm={setForm} onCrear={handleCrear} loading={loading} />
         <TablaAprendices data={data} />
       </Box>

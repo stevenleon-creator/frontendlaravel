@@ -3,7 +3,7 @@ import { Stack, Typography, Button, TextField } from "@mui/material";
 
 const BarraAcciones = ({ idFiltro, setIdFiltro, loading, onVerTodos, onBuscarPorId, onEliminar, onActualizar }) => {
   return (
-    <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
+    <Stack direction="row" spacing={2} sx={{ mb: 3, alignItems: "center" }}>
       <Typography variant="h5" sx={{ flex: 1, fontWeight: 700 }}>
         Aprendices SENA
       </Typography>
@@ -11,7 +11,9 @@ const BarraAcciones = ({ idFiltro, setIdFiltro, loading, onVerTodos, onBuscarPor
         {loading ? "Cargando..." : "VER TODOS"}
       </Button>
       <TextField
-        size="small" label="ID" value={idFiltro}
+        size="small" 
+        label="ID" 
+        value={idFiltro}
         onChange={(e) => setIdFiltro(e.target.value)}
         sx={{ width: 120 }}
       />
