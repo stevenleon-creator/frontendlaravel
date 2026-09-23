@@ -1,7 +1,12 @@
-import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
-
-// https://vite.dev/config/
+import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
+  server: {
+    host: '0.0.0.0',
+    port: 5173,
+    watch: {
+      usePolling: true, // 👈 Importante para que Vite detecte cambios de código dentro de Docker en Windows
+    },
+  },
 })
