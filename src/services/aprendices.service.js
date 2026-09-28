@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_BASE = `${import.meta.env.VITE_API_URL}/aprendices`;
+// Pegas la URL directamente aquí
+const API_BASE = "https://backend-laravel-production-ac98.up.railway.app/api/aprendices";
 
 export const getAprendices = async () => {
   const res = await axios.get(API_BASE);
