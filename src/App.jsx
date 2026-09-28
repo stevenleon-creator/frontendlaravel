@@ -94,7 +94,7 @@ function App() {
           }}
           sx={{ mb: 2 }}
         >
-          <Tab label="MySQL" value="mysql" />
+          <Tab label="MySQL" value="postgres" />
           <Tab label="MongoDB" value="mongo" />
         </Tabs>
         <BarraAcciones
